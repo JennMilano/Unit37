@@ -9,7 +9,7 @@ require('dotenv').config();
 const client = new pg.Client(process.env.DATABASE_URL || 'postgres://postgres@localhost/acme_backend_store_db');
 
 const createTables = async () => {
-    SQL = `
+    const SQL = `
         DROP TABLE IF EXISTS user_carts;
         DROP TABLE IF EXISTS users;
         DROP TABLE IF EXISTS products;
@@ -20,7 +20,7 @@ const createTables = async () => {
             password VARCHAR(255) NOT NULL,
             is_admin BOOLEAN DEFAULT FALSE,
             name VARCHAR(255) NOT NULL,
-            email VARCHAR(255),
+            email_address VARCHAR(255),
             mailing_address VARCHAR(255) NOT NULL,
             phone_number VARCHAR(255),
             billing_address VARCHAR(255)
@@ -38,6 +38,7 @@ const createTables = async () => {
             id UUID PRIMARY KEY,
             user_id UUID REFERENCES users(id) NOT NULL,
             product_id UUID REFERENCES products(id) NOT NULL,
+            quantity INTEGER NOT NULL,
             CONSTRAINT unique_cart UNIQUE (user_id, product_id)
         );
     `;

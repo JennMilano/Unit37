@@ -4,64 +4,51 @@ const bcrypt = require('bcrypt');
 const seedDatabase = async () => {
   try {
     await client.connect();
-    
-    // Create the uuid-ossp extension if it doesn't exist
-    await client.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
-    
-    // Create tables
-    await createTables();
 
-    // Insert NFL quarterbacks as users
+        await createTables();
+
+ 
     const quarterbacks = [
       {
         username: 'pmahomes',
         password: await bcrypt.hash('password123', 10),
-        email: 'patrick.mahomes@chiefs.com',
-        first_name: 'Patrick',
-        last_name: 'Mahomes',
-        address: '1 Arrowhead Drive',
-        city: 'Kansas City',
-        state: 'MO',
-        zip_code: '64129',
-        phone: '816-920-9300',
-        billing_address: '1 Arrowhead Drive, Kansas City, MO 64129'
+        name: 'Patrick Mahomes',
+        email_address: 'patrick.mahomes@chiefs.com',
+        mailing_address: '1 Arrowhead Drive, Kansas City, MO 64129',
+        phone_number: '816-920-9300',
+        billing_address: '1 Arrowhead Drive, Kansas City, MO 64129',
+        is_admin: false
       },
       {
         username: 'jallen',
         password: await bcrypt.hash('password123', 10),
-        email: 'josh.allen@bills.com',
-        first_name: 'Josh',
-        last_name: 'Allen',
-        address: '1 Bills Drive',
-        city: 'Orchard Park',
-        state: 'NY',
-        zip_code: '14127',
-        phone: '716-648-1800',
-        billing_address: '1 Bills Drive, Orchard Park, NY 14127'
+        name: 'Josh Allen',
+        email_address: 'josh.allen@bills.com',
+        mailing_address: '1 Bills Drive, Orchard Park, NY 14127',
+        phone_number: '716-648-1800',
+        billing_address: '1 Bills Drive, Orchard Park, NY 14127',
+        is_admin: false
       },
       {
         username: 'jburrow',
         password: await bcrypt.hash('password123', 10),
-        email: 'joe.burrow@bengals.com',
-        first_name: 'Joe',
-        last_name: 'Burrow',
-        address: '1 Paul Brown Stadium',
-        city: 'Cincinnati',
-        state: 'OH',
-        zip_code: '45202',
-        phone: '513-455-4800',
-        billing_address: '1 Paul Brown Stadium, Cincinnati, OH 45202'
+        name: 'Joe Burrow',
+        email_address: 'joe.burrow@bengals.com',
+        mailing_address: '1 Paul Brown Stadium, Cincinnati, OH 45202',
+        phone_number: '513-455-4800',
+        billing_address: '1 Paul Brown Stadium, Cincinnati, OH 45202',
+        is_admin: false
       }
     ];
 
     for (const qb of quarterbacks) {
       await client.query(`
-        INSERT INTO users (username, password, email, first_name, last_name, address, city, state, zip_code, phone, billing_address)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      `, [qb.username, qb.password, qb.email, qb.first_name, qb.last_name, qb.address, qb.city, qb.state, qb.zip_code, qb.phone, qb.billing_address]);
+        INSERT INTO users (username, password, name, email_address, mailing_address, phone_number, billing_address, is_admin)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `, [qb.username, qb.password, qb.name, qb.email_address, qb.mailing_address, qb.phone_number, qb.billing_address, qb.is_admin]);
     }
 
-    // Insert football-related products
+
     const products = [
       {
         name: 'NFL Official Game Football',
