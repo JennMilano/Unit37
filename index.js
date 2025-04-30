@@ -1,182 +1,111 @@
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const { 
+const express = require("express");
+const morgan = require("morgan");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
+const {
   client,
   createUser,
   createProduct,
-  createUserCart,
-  getProducts,
-  getUserCart,
-  updateUserCart,
-  deleteUserCart,
-  getUser
-} = require('./db');
+  createTables,
+  fetchUsers,
+  fetchProducts,
+  fetchUserCart,
+  addToCart,
+  removeFromCart,
+  fetchSingleProduct,
+  fetchSingleUser,
+} = require("./db");
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-const JWT = process.env.JWT || 'shhh';
+const server = express();
+client.connect();
 
-app.use(cors());
-app.use(express.json());
+server.use(cors());
+server.use(morgan("dev"));
+server.use(express.json());
 
-// Authentication middleware
-const authenticate = async (req, res, next) => {
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+server.get("/api/users", async (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
-    const decoded = jwt.verify(token, JWT);
-    const user = await client.query('SELECT * FROM users WHERE id = $1', [decoded.id]);
-    
-    if (!user.rows[0]) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    req.user = user.rows[0];
-    next();
+    const users = await fetchUsers();
+    res.json(users);
   } catch (error) {
-    res.status(401).json({ error: 'Please authenticate' });
-  }
-};
-
-// Admin middleware
-const isAdmin = async (req, res, next) => {
-  if (!req.user.is_admin) {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
-  next();
-};
-
-// Products routes
-app.get('/api/products', async (req, res, next) => {
-  try {
-    const result = await getProducts(req, res, next);
-  } catch (err) {
-    next(err);
+    next(error);
   }
 });
 
-app.get('/api/products/:id', async (req, res, next) => {
+server.get("/api/products", async (req, res, next) => {
   try {
-    const result = await client.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Product not found' });
-    }
-    res.json(result.rows[0]);
-  } catch (err) {
-    next(err);
+    const products = await fetchProducts();
+    res.json(products);
+  } catch (error) {
+    next(error);
   }
 });
 
-// Users routes
-app.post('/api/users/register', async (req, res, next) => {
+server.get("/api/user_cart/:user_id", async (req, res, next) => {
   try {
-    await createUser(req, res, next);
-  } catch (err) {
-    next(err);
+    const userCart = await fetchUserCart(req.params.user_id);
+    res.json(userCart);
+  } catch (error) {
+    next(error);
   }
 });
 
-app.post('/api/users/login', async (req, res, next) => {
+server.get("/api/user/:user_id", async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
-    const user = result.rows[0];
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    const token = jwt.sign({ id: user.id }, JWT);
-    res.json({ token, user: { ...user, password: undefined } });
-  } catch (err) {
-    next(err);
+    const user = await fetchSingleUser(req.params.user_id);
+    res.json(user);
+  } catch (error) {
+    next(error);
   }
 });
 
-// Cart routes
-app.get('/api/cart', authenticate, async (req, res, next) => {
+server.get("/api/product/:product_id", async (req, res, next) => {
   try {
-    req.params.user_id = req.user.id;
-    await getUserCart(req, res, next);
-  } catch (err) {
-    next(err);
+    const product = await fetchSingleProduct(req.params.product_id);
+    res.json(product);
+  } catch (error) {
+    next(error);
   }
 });
 
-app.post('/api/cart', authenticate, async (req, res, next) => {
+server.post("/api/user_cart/:user_id", async (req, res, next) => {
   try {
-    req.body.user_id = req.user.id;
-    await createUserCart(req, res, next);
-  } catch (err) {
-    next(err);
+    const userCart = await addToCart(req.params.user_id, req.body.product_id);
+    res.json(userCart);
+  } catch (error) {
+    next(error);
   }
 });
 
-app.put('/api/cart/:product_id', authenticate, async (req, res, next) => {
+server.post("/api/users", async (req, res, next) => {
   try {
-    req.params.user_id = req.user.id;
-    await updateUserCart(req, res, next);
-  } catch (err) {
-    next(err);
+    const user = await createUser(req.body.username, req.body.password, req.body.name, req.body.mailing_address);
+    res.json(user);
+  } catch (error) {
+    next(error);
   }
 });
 
-app.delete('/api/cart/:product_id', authenticate, async (req, res, next) => {
+server.post("/api/products", async (req, res, next) => {
   try {
-    req.params.user_id = req.user.id;
-    await deleteUserCart(req, res, next);
-  } catch (err) {
-    next(err);
+    const product = await createProduct(req.body.name, req.body.description, req.body.img_url, req.body.price);
+    res.json(product);
+  } catch (error) {
+    next(error);
   }
 });
 
-// Admin routes
-app.post('/api/admin/products', authenticate, isAdmin, async (req, res, next) => {
+server.delete("/api/user_cart/:user_id/:product_id", async (req, res, next) => {
   try {
-    await createProduct(req, res, next);
-  } catch (err) {
-    next(err);
+    await removeFromCart(req.params.user_id, req.params.product_id);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
   }
-});
-
-app.get('/api/admin/products', authenticate, isAdmin, async (req, res, next) => {
-  try {
-    const result = await getProducts(req, res, next);
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.get('/api/admin/users', authenticate, isAdmin, async (req, res, next) => {
-  try {
-    const result = await client.query('SELECT id, username, email, is_admin, first_name, last_name FROM users');
-    res.json(result.rows);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
-// Connect to database and start server
-const startServer = async () => {
-  try {
-    await client.connect();
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error('Error starting server:', err);
-  }
-};
-
-startServer(); 
+}); 
