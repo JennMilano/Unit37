@@ -1,98 +1,83 @@
-const { client, createTables } = require('./db');
-const bcrypt = require('bcrypt');
+const {
+  client,
+  createUser,
+  createProduct,
+  createTables,
+  fetchUsers,
+  fetchProducts,
+  fetchUserCart,
+  addToCart,
+  removeFromCart,
+  fetchSingleProduct,
+  fetchSingleUser,
+} = require("./db");
 
-const seedDatabase = async () => {
-  try {
-    await client.connect();
+const seed = async () => {
+  await client.connect();
 
-        await createTables();
+  await createTables();
+  console.log("Tables created");
 
- 
-    const quarterbacks = [
-      {
-        username: 'pmahomes',
-        password: await bcrypt.hash('password123', 10),
-        name: 'Patrick Mahomes',
-        email_address: 'patrick.mahomes@chiefs.com',
-        mailing_address: '1 Arrowhead Drive, Kansas City, MO 64129',
-        phone_number: '816-920-9300',
-        billing_address: '1 Arrowhead Drive, Kansas City, MO 64129',
-        is_admin: false
-      },
-      {
-        username: 'jallen',
-        password: await bcrypt.hash('password123', 10),
-        name: 'Josh Allen',
-        email_address: 'josh.allen@bills.com',
-        mailing_address: '1 Bills Drive, Orchard Park, NY 14127',
-        phone_number: '716-648-1800',
-        billing_address: '1 Bills Drive, Orchard Park, NY 14127',
-        is_admin: false
-      },
-      {
-        username: 'jburrow',
-        password: await bcrypt.hash('password123', 10),
-        name: 'Joe Burrow',
-        email_address: 'joe.burrow@bengals.com',
-        mailing_address: '1 Paul Brown Stadium, Cincinnati, OH 45202',
-        phone_number: '513-455-4800',
-        billing_address: '1 Paul Brown Stadium, Cincinnati, OH 45202',
-        is_admin: false
-      }
-    ];
+  const [
+    user1,
+    user2,
+    user3,
+    user4,
+    user5,
+    user6,
+    user7,
+    user8,
+    user9,
+    user10,
+  ] = await Promise.all([
+    createUser("user1", 'password123', 'Patrick Mahomes', '1 Arrowhead Drive, Kansas City, MO 64129'),
+    createUser("user2", 'password123', 'Josh Allen', '1 Bills Drive, Orchard Park, NY 14127'),
+    createUser("user3", 'password123', 'Joe Burrow', '1 Paul Brown Stadium, Cincinnati, OH 45202'),
+    createUser("user4", 'password123', 'Justin Herbert', '1 SoFi Stadium, Los Angeles, CA 90045'),
+    createUser("user5", 'password123', 'Lamar Jackson', '1 M&T Bank Stadium, Baltimore, MD 21201'),
+    createUser("user6", 'password123', 'Trevor Lawrence', '1 TIAA Bank Field, Jacksonville, FL 32202'),
+    createUser("user7", 'password123', 'Kyler Murray', '1 State Farm Stadium, Glendale, AZ 85305'),
+    
+  ]);
 
-    for (const qb of quarterbacks) {
-      await client.query(`
-        INSERT INTO users (username, password, name, email_address, mailing_address, phone_number, billing_address, is_admin)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      `, [qb.username, qb.password, qb.name, qb.email_address, qb.mailing_address, qb.phone_number, qb.billing_address, qb.is_admin]);
-    }
+  console.log("Users created");
+  console.log(await fetchUsers());
 
+  const [
+    football,
+    jersey, 
+    helmet,
+    cap
+  ] = await Promise.all([
+    createProduct(
+      "NFL Official Game Football", 
+      "Authentic NFL game football, perfect for collectors and players alike.", 
+      "https://example.com/football.jpg", 
+      99.99),
 
-    const products = [
-      {
-        name: 'NFL Official Game Football',
-        description: 'Authentic NFL game football, perfect for collectors and players alike.',
-        price: 99.99,
-        image_url: 'https://example.com/football.jpg',
-        stock_quantity: 50
-      },
-      {
-        name: 'NFL Team Jersey',
-        description: 'Official NFL team jersey, available in all team colors and sizes.',
-        price: 129.99,
-        image_url: 'https://example.com/jersey.jpg',
-        stock_quantity: 100
-      },
-      {
-        name: 'NFL Helmet Replica',
-        description: 'Authentic NFL team helmet replica, perfect for display.',
-        price: 199.99,
-        image_url: 'https://example.com/helmet.jpg',
-        stock_quantity: 25
-      },
-      {
-        name: 'NFL Team Cap',
-        description: 'Official NFL team cap, available in all team colors.',
-        price: 29.99,
-        image_url: 'https://example.com/cap.jpg',
-        stock_quantity: 200
-      }
-    ];
+    createProduct(
+      "NFL Team Jersey",
+      "Official NFL team jersey, available in all team colors and sizes.", 
+      "https://example.com/jersey.jpg", 
+      129.99),
+    createProduct(
+      "NFL Helmet Replica", 
+      "Authentic NFL team helmet replica, perfect for display.", 
+      "https://example.com/helmet.jpg", 
+      199.99),
+    createProduct(
+      "NFL Team Cap",
+      "Official NFL team cap, available in all team colors.",
+      "https://example.com/cap.jpg",
+      29.99)
+  ])
 
-    for (const product of products) {
-      await client.query(`
-        INSERT INTO products (name, description, price, image_url, stock_quantity)
-        VALUES ($1, $2, $3, $4, $5)
-      `, [product.name, product.description, product.price, product.image_url, product.stock_quantity]);
-    }
+  console.log("Products created");
+  console.log(await fetchProducts());
 
-    console.log('Database seeded successfully!');
-  } catch (err) {
-    console.error('Error seeding database:', err);
-  } finally {
-    client.end();
-  }
+  await client.end();
 };
 
-seedDatabase(); 
+seed().catch((error) => {
+  console.error("Error seeding database:", error);
+});

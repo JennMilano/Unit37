@@ -85,7 +85,7 @@ server.post("/api/user_cart/:user_id", async (req, res, next) => {
 
 server.post("/api/users", async (req, res, next) => {
   try {
-    const user = await createUser(req.body.username, req.body.password, req.body.name, req.body.mailing_address);
+    const user = await createUser(req.body);
     res.json(user);
   } catch (error) {
     next(error);
@@ -94,7 +94,7 @@ server.post("/api/users", async (req, res, next) => {
 
 server.post("/api/products", async (req, res, next) => {
   try {
-    const product = await createProduct(req.body.name, req.body.description, req.body.img_url, req.body.price);
+    const product = await createProduct(req.body);
     res.json(product);
   } catch (error) {
     next(error);

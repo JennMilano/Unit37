@@ -1,15 +1,11 @@
 const pg = require('pg');
 const uuid = require('uuid');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const JWT = process.env.JWT || 'shhh';
 
-require('dotenv').config();
-
-const client = new pg.Client(process.env.DATABASE_URL || 'postgres://postgres@localhost/acme_backend_store_db');
+const client = new pg.Client(process.env.DATABASE_URL || "postgres://postgres@localhost/acme_backend_store_db");
 
 const createTables = async () => {
-    const SQL = `
+    SQL = `
         DROP TABLE IF EXISTS user_carts;
         DROP TABLE IF EXISTS users;
         DROP TABLE IF EXISTS products;
