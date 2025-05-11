@@ -33,7 +33,7 @@ server.get("/", (req, res) => {
       products: "/api/products",
       userCart: "/api/user_cart/:user_id",
       singleUser: "/api/user/:user_id",
-      singleProduct: "/api/product/:product_id"
+      singleProduct: "/api/products/:product_id"
     }
   });
 });
@@ -79,7 +79,7 @@ server.get("/api/user/:user_id", async (req, res, next) => {
   }
 });
 
-server.get("/api/product/:product_id", async (req, res, next) => {
+server.get("/api/products/:product_id", async (req, res, next) => {
   try {
     const product = await fetchSingleProduct(req.params.product_id);
     res.json(product);
