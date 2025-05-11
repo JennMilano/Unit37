@@ -133,3 +133,29 @@ server.post("/api/register", async (req, res, next) => {
     next(error);
   }
 });
+
+
+server.post("/api/login", async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const users = await fetchUsers();
+    const user = users.find((u) => u.username === username);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+    
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, username: user.username, is_admin: user.is_admin },
+      process.env.JWT_SECRET || "your_secret_key_here",
+    );
+
+    res.json({ token, user });
+  } catch (err) {
+    next(err);
+  }
+});
