@@ -51,24 +51,24 @@ const seed = async () => {
   ] = await Promise.all([
     createProduct(
       "NFL Official Game Football", 
-      "Authentic NFL game football, perfect for collectors and players alike.", 
-      "https://example.com/football.jpg", 
+      "Authentic NFL game football, perfect for collectors and players.", 
+      "https://i5.walmartimages.com/seo/Wilson-The-Duke-NFL-Football_d5908cdb-74bb-4b22-9dbe-056823b52f68.01f80822f0e5d1c489edf76db36fd693.jpeg", 
       99.99),
 
     createProduct(
       "NFL Team Jersey",
       "Official NFL team jersey, available in all team colors and sizes.", 
-      "https://example.com/jersey.jpg", 
+      "https://i01.hsncdn.com/is/image/HomeShoppingNetwork/rocs1200/officially-licensed-nfl-youth-brian-dawkins-2004-retire-d-20230720205237867~21582107w_alt3.jpg", 
       129.99),
     createProduct(
       "NFL Helmet Replica", 
       "Authentic NFL team helmet replica, perfect for display.", 
-      "https://example.com/helmet.jpg", 
+      "https://www.greengridiron.com/cdn/shop/products/BaltimoreRavensRiddellSpeedAuthentic01_1024x1024.jpg?v=1653507086", 
       199.99),
     createProduct(
       "NFL Team Cap",
       "Official NFL team cap, available in all team colors.",
-      "https://example.com/cap.jpg",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2ECfLKW5dukBcuRC3kPHFf-WKzQbwS6kazw&s",
       29.99)
   ])
 

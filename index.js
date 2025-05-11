@@ -24,6 +24,20 @@ server.use(cors());
 server.use(morgan("dev"));
 server.use(express.json());
 
+
+server.get("/", (req, res) => {
+  res.json({
+    message: "Welcome to the NFL E-commerce API",
+    endpoints: {
+      users: "/api/users",
+      products: "/api/products",
+      userCart: "/api/user_cart/:user_id",
+      singleUser: "/api/user/:user_id",
+      singleProduct: "/api/product/:product_id"
+    }
+  });
+});
+
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
@@ -109,3 +123,13 @@ server.delete("/api/user_cart/:user_id/:product_id", async (req, res, next) => {
     next(error);
   }
 }); 
+
+server.post("/api/register", async (req, res, next) => {
+  try {
+    const { username, password, name, mailing_address } = req.body;
+    const user = await createUser(username, password, name, mailing_address);
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+});
