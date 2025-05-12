@@ -2,7 +2,7 @@ const pg = require('pg');
 const uuid = require('uuid');
 const bcrypt = require('bcryptjs');
 
-const client = new pg.Client(process.env.DATABASE_URL || "postgres://postgres@localhost/acme_backend_store_db");
+const client = new pg.Client(process.env.DATABASE_URL || "postgres://localhost/nfl_ecommerce");
 
 const createTables = async () => {
     SQL = `

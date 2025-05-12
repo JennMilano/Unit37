@@ -4,6 +4,7 @@ const {
     createTables,
     fetchUsers,
     fetchProducts,
+  client,
   } = require("./db");
   
   const seed = async () => {
