@@ -19,11 +19,26 @@ const {
   deleteProduct,
   clearCart,
 } = require("./db");
+const pg = require("pg");
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 const server = express();
+const client = new pg.Client(process.env.DATABASE_URL);
 client.connect();
 
-server.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+};
+
+server.use(cors(corsOptions));
 server.use(morgan("dev"));
 server.use(express.json());
 
