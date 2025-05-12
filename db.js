@@ -158,6 +158,11 @@ const fetchSingleProduct = async (product_id) => {
     return response.rows[0];
 };
 
+const clearCart = async (user_id) => {
+    const SQL = `DELETE FROM user_carts WHERE user_id = $1`;
+    await client.query(SQL, [user_id]);
+  };
+
 //join user_carts and products tables... makes all prodcut info available to cart page
 const fetchUserCart = async (user_id) => {
     const SQL = `
@@ -192,4 +197,5 @@ module.exports = {
     fetchSingleProduct,
     reduceCartQuantity,
     deleteProduct,
+    clearCart,
 }; 
