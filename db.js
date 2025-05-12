@@ -120,11 +120,25 @@ const fetchSingleProduct = async (product_id) => {
     return response.rows[0];
 };
 
+//join user_carts and products tables... makes all prodcut info available to cart page
 const fetchUserCart = async (user_id) => {
-    const SQL = `SELECT * FROM user_carts WHERE user_id = $1`;
+    const SQL = `
+      SELECT
+        uc.id,
+        uc.user_id,
+        uc.product_id,
+        uc.quantity,
+        p.name,
+        p.description,
+        p.img_url,
+        p.price
+      FROM user_carts uc
+      JOIN products p ON uc.product_id = p.id
+      WHERE uc.user_id = $1
+    `;
     const response = await client.query(SQL, [user_id]);
     return response.rows;
-};
+  };
 
 module.exports = {
     client,
