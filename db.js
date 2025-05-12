@@ -123,6 +123,17 @@ return removeFromCart(user_id, product_id);
   return response.rows[0];
 };
 
+const deleteProduct = async (product_id) => {
+    // First delete all cart entries referencing this product
+    const deleteCartSQL = `DELETE FROM user_carts WHERE product_id = $1`;
+    await client.query(deleteCartSQL, [product_id]);
+  
+    // Then delete the product
+    const deleteProductSQL = `DELETE FROM products WHERE id = $1 RETURNING *`;
+    const response = await client.query(deleteProductSQL, [product_id]);
+    return response.rows[0];
+  };
+
 const fetchUsers = async () => {
     const SQL = `SELECT * FROM users`;
     const response = await client.query(SQL);
@@ -180,4 +191,5 @@ module.exports = {
     fetchSingleUser,
     fetchSingleProduct,
     reduceCartQuantity,
+    deleteProduct,
 }; 

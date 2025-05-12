@@ -16,6 +16,7 @@ const {
   fetchSingleProduct,
   fetchSingleUser,
   reduceCartQuantity,
+  deleteProduct,
 } = require("./db");
 
 const server = express();
@@ -57,6 +58,18 @@ server.get("/api/products", async (req, res, next) => {
   try {
     const products = await fetchProducts();
     res.json(products);
+  } catch (error) {
+    next(error);
+  }
+});
+
+server.delete("/api/products/:product_id", async (req, res, next) => {
+  try {
+    const deletedProduct = await deleteProduct(req.params.product_id);
+    if (!deletedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    res.json(deletedProduct);
   } catch (error) {
     next(error);
   }
