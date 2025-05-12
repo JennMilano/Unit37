@@ -69,10 +69,27 @@ const createProduct = async (name, description, img_url, price) => {
 };
 
 const addToCart = async (user_id, product_id) => {
-    const SQL = `INSERT INTO user_carts (id, user_id, product_id) VALUES ($1, $2, $3) RETURNING *`;
-    const response = await client.query(SQL, [uuid.v4(), user_id, product_id]);
-    return response.rows[0];
-};
+    // check if the item exists in the cart
+    const checkSQL = `SELECT * FROM user_carts WHERE user_id = $1 AND product_id = $2`;
+    const checkResponse = await client.query(checkSQL, [user_id, product_id]);
+  
+    if (checkResponse.rows.length > 0) {
+      // item exists - increase quantity by 1
+      const updateSQL = `UPDATE user_carts SET quantity = quantity + 1 WHERE user_id = $1 AND product_id = $2 RETURNING *`;
+      const updateResponse = await client.query(updateSQL, [user_id, product_id]);
+      return updateResponse.rows[0];
+    } else {
+      // item doesn't exist - insert new row with quantity 1
+      const insertSQL = `INSERT INTO user_carts (id, user_id, product_id, quantity) VALUES ($1, $2, $3, $4) RETURNING *`;
+      const insertResponse = await client.query(insertSQL, [
+        uuid.v4(),
+        user_id,
+        product_id,
+        1,
+      ]);
+      return insertResponse.rows[0];
+    }
+  };
 
 const removeFromCart = async (user_id, product_id) => {
     const SQL = `DELETE FROM user_carts WHERE user_id = $1 AND product_id = $2`;
