@@ -42,8 +42,8 @@ const createTables = async () => {
     await client.query(SQL);
 };
 
-const createUser = async (username, password, name, mailing_address) => {
-    const SQL = `INSERT INTO users (id, username, password, name, mailing_address) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+const createUser = async (username, password, name, mailing_address, is_admin) => {
+    const SQL = `INSERT INTO users (id, username, password, name, mailing_address, is_admin) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
     const hashedPassword = await bcrypt.hash(password, 10);
     const response = await client.query(SQL, [
         uuid.v4(),
@@ -51,6 +51,7 @@ const createUser = async (username, password, name, mailing_address) => {
         hashedPassword,
         name,
         mailing_address,
+        is_admin || false,
     ]);
     return response.rows[0];
 };

@@ -30,13 +30,15 @@ const seed = async () => {
     user9,
     user10,
   ] = await Promise.all([
-    createUser("user1", 'password123', 'Patrick Mahomes', '1 Arrowhead Drive, Kansas City, MO 64129'),
-    createUser("user2", 'password123', 'Josh Allen', '1 Bills Drive, Orchard Park, NY 14127'),
-    createUser("user3", 'password123', 'Joe Burrow', '1 Paul Brown Stadium, Cincinnati, OH 45202'),
-    createUser("user4", 'password123', 'Justin Herbert', '1 SoFi Stadium, Los Angeles, CA 90045'),
-    createUser("user5", 'password123', 'Lamar Jackson', '1 M&T Bank Stadium, Baltimore, MD 21201'),
-    createUser("user6", 'password123', 'Trevor Lawrence', '1 TIAA Bank Field, Jacksonville, FL 32202'),
-    createUser("user7", 'password123', 'Kyler Murray', '1 State Farm Stadium, Glendale, AZ 85305'),
+    createUser("test@test.com", "password123", "Test User", "TestAddress", false),
+    createUser("admin@admin.com", "password123", "Admin User", "AdminAddress", true),
+    // createUser("user1", 'password123', 'Patrick Mahomes', '1 Arrowhead Drive, Kansas City, MO 64129'),
+    // createUser("user2", 'password123', 'Josh Allen', '1 Bills Drive, Orchard Park, NY 14127'),
+    // createUser("user3", 'password123', 'Joe Burrow', '1 Paul Brown Stadium, Cincinnati, OH 45202'),
+    // createUser("user4", 'password123', 'Justin Herbert', '1 SoFi Stadium, Los Angeles, CA 90045'),
+    // createUser("user5", 'password123', 'Lamar Jackson', '1 M&T Bank Stadium, Baltimore, MD 21201'),
+    // createUser("user6", 'password123', 'Trevor Lawrence', '1 TIAA Bank Field, Jacksonville, FL 32202'),
+    // createUser("user7", 'password123', 'Kyler Murray', '1 State Farm Stadium, Glendale, AZ 85305'),
     
   ]);
 

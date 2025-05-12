@@ -126,10 +126,15 @@ server.delete("/api/user_cart/:user_id/:product_id", async (req, res, next) => {
 
 server.post("/api/register", async (req, res, next) => {
   try {
+
+    //registration input values
     const { username, password, name, mailing_address } = req.body;
+
+    //default admin is false
     const user = await createUser(username, password, name, mailing_address);
     res.json(user);
   } catch (error) {
+    console.error("Registration error:", error);
     next(error);
   }
 });
