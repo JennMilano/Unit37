@@ -56,16 +56,16 @@ const createUser = async (username, password, name, mailing_address, is_admin) =
     return response.rows[0];
 };
 
-const createProduct = async (name, description, img_url, price) => {
-    const SQL = `INSERT INTO products (id, name, description, img_url, price) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
-    const response = await client.query(SQL, [
-        uuid.v4(),
-        name,
-        description,
-        img_url,
-        price,
-    ]);
-    return response.rows[0];
+const createProduct = async ({ name, description, img_url, price }) => {
+  const SQL = `INSERT INTO products (id, name, description, img_url, price) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+  const response = await client.query(SQL, [
+    uuid.v4(),
+    name,
+    description,
+    img_url,
+    price,
+  ]);
+  return response.rows[0];
 };
 
 const addToCart = async (user_id, product_id) => {
