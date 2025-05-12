@@ -15,6 +15,7 @@ const {
   removeFromCart,
   fetchSingleProduct,
   fetchSingleUser,
+  reduceCartQuantity,
 } = require("./db");
 
 const server = express();
@@ -123,6 +124,18 @@ server.delete("/api/user_cart/:user_id/:product_id", async (req, res, next) => {
     next(error);
   }
 }); 
+
+server.put("/api/user_cart/:user_id/:product_id", async (req, res, next) => {
+  try {
+    const updatedCart = await reduceCartQuantity(
+      req.params.user_id, 
+      req.params.product_id
+    );
+    res.json(updatedCart);
+  } catch (error) {
+    next(error);
+  }
+});
 
 server.post("/api/register", async (req, res, next) => {
   try {

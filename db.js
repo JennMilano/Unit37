@@ -96,6 +96,33 @@ const removeFromCart = async (user_id, product_id) => {
     await client.query(SQL, [user_id, product_id]);
 };
 
+const reduceCartQuantity = async (user_id, product_id) => {
+    // get the current quantity first
+    const checkSQL = `SELECT quantity FROM user_carts WHERE user_id = $1 AND product_id = $2`;
+    const checkResponse = await client.query(checkSQL, [user_id, product_id]);
+    
+    if (checkResponse.rows.length === 0) {
+      throw new Error('Item not found in cart');
+    }
+  
+    const currentQuantity = checkResponse.rows[0].quantity;
+    
+    if (currentQuantity <= 1) {
+      // if quantity is 1 or less then delete
+return removeFromCart(user_id, product_id);
+  }
+  
+  // Otherwise reduce quantity by 1
+  const updateSQL = `
+    UPDATE user_carts 
+    SET quantity = quantity - 1 
+    WHERE user_id = $1 AND product_id = $2 
+    RETURNING *
+  `;
+  const response = await client.query(updateSQL, [user_id, product_id]);
+  return response.rows[0];
+};
+
 const fetchUsers = async () => {
     const SQL = `SELECT * FROM users`;
     const response = await client.query(SQL);
@@ -152,4 +179,5 @@ module.exports = {
     removeFromCart,
     fetchSingleUser,
     fetchSingleProduct,
+    reduceCartQuantity,
 }; 
