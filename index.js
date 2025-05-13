@@ -31,10 +31,17 @@ client.connect()
   });
 
 server.use(cors({
-  origin: ['http://localhost:5174', 'http://localhost:5173', 'http://localhost:3000'],
+  origin: [
+    'http://localhost:5174',  // Development
+    'http://localhost:5173',  // Alternative development
+    'http://localhost:3000',  // Alternative development
+    'https://capstone-d9iz.onrender.com'  // Production
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 }));
 server.use(morgan("dev"));
 server.use(express.json());
