@@ -3,7 +3,9 @@ const morgan = require("morgan");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+require('dotenv').config();
 const {
+  client,
   createUser,
   createProduct,
   createTables,
@@ -18,26 +20,17 @@ const {
   deleteProduct,
   clearCart,
 } = require("./db");
-const pg = require("pg");
-const { Pool } = require("pg");
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
 
 const server = express();
-const client = new pg.Client(process.env.DATABASE_URL);
-client.connect();
+client.connect()
+  .then(() => {
+    console.log('Connected to database');
+  })
+  .catch(err => {
+    console.error('Error connecting to database:', err);
+  });
 
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-};
-
-server.use(cors(corsOptions));
+server.use(cors());
 server.use(morgan("dev"));
 server.use(express.json());
 

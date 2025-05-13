@@ -2,7 +2,12 @@ const pg = require('pg');
 const uuid = require('uuid');
 const bcrypt = require('bcryptjs');
 
-const client = new pg.Client(process.env.DATABASE_URL || "postgres://localhost/nfl_ecommerce");
+const client = new pg.Client({
+  connectionString: process.env.DATABASE_URL || "postgres://localhost/nfl_ecommerce",
+  ssl: process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: false
+  } : undefined
+});
 
 const createTables = async () => {
     SQL = `
